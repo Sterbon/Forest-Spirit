@@ -25,5 +25,10 @@ public class PlayerBehaviour : MonoBehaviour {
 		playerRigidbody.velocity = Vector2.ClampMagnitude(playerRigidbody.velocity, maxSpeed);
 
 	}
+
+	void OnTriggerEnter2D(Collider2D node)
+	{
+		
+	}
 }
 
