@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PlayerBehaviour : MonoBehaviour {
 
 	[SerializeField] private float acceleration;
-	[SerializeField] private float maxSpeed;	
+	[SerializeField] private float maxSpeed, rotationSpeed;	
 	[SerializeField] private GameObject[] nodes;
 	[SerializeField] private Image clueImage;
 	private Rigidbody2D playerRigidbody;
@@ -39,6 +39,12 @@ public class PlayerBehaviour : MonoBehaviour {
 			clueImage.enabled = false;
 		}
 
+		if(movement != Vector2.zero)
+		{
+			float angle = Mathf.Atan2(movement.y, movement.x) * Mathf.Rad2Deg;
+			transform.rotation = Quaternion.Slerp (transform.rotation, Quaternion.Euler (0, 0, angle), rotationSpeed * Time.deltaTime);
+		}
+
 		playerRigidbody.AddForce(movement * acceleration);
 		playerRigidbody.velocity = Vector2.ClampMagnitude(playerRigidbody.velocity, maxSpeed);
 
@@ -51,10 +57,9 @@ public class PlayerBehaviour : MonoBehaviour {
 			GameManager.gameEnded = true;
 			return;
 		}
-		else
-			nodes [curr_node].GetComponentInChildren<BoxCollider2D>().enabled = false;
-			curr_node++;
-			nodes [curr_node].GetComponentInChildren<BoxCollider2D>().enabled = true;
+		nodes [curr_node].GetComponentInChildren<BoxCollider2D>().enabled = false;
+		curr_node++;
+		nodes [curr_node].GetComponentInChildren<BoxCollider2D>().enabled = true;
 	}
 
 }
