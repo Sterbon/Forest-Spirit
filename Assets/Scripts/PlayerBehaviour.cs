@@ -17,6 +17,7 @@ public class PlayerBehaviour : MonoBehaviour {
 		clueImage.enabled = false;
 
 		playerRigidbody = gameObject.GetComponent<Rigidbody2D> ();
+
 		for(int i = 0; i < nodes.Length; i++)
 		{
 			nodes [i].GetComponentInChildren<Light> ().enabled = false;
@@ -25,19 +26,29 @@ public class PlayerBehaviour : MonoBehaviour {
 		nodes [curr_node].GetComponentInChildren<BoxCollider2D>().enabled = true;
 
 	}
+	void Update()
+	{
+		foreach(GameObject n in nodes)
+		{
+			float distance = Vector2.Distance(n.transform.position, transform.position );
 			
+			if (distance < 0.5f) {
+				clueImage.enabled = true;
+				break;
+			} else {
+				clueImage.enabled = false;
+			}
+		}
+	}
 	void FixedUpdate()
 	{
+		if(GameManager.paused)
+			return;
+
 		float horizontalMovement = Input.GetAxis ("Horizontal");
 		float verticalMovement = Input.GetAxis ("Vertical");
 
 		Vector2 movement = new Vector2 (horizontalMovement, verticalMovement);
-		float distance = Vector2.Distance(nodes[curr_node].transform.position, transform.position );
-		if (distance < 0.5f) {
-			clueImage.enabled = true;
-		} else {
-			clueImage.enabled = false;
-		}
 
 		if(movement != Vector2.zero)
 		{
@@ -52,14 +63,20 @@ public class PlayerBehaviour : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D node)
 	{
+		if(node.tag == "Node")
+		{
 			nodes [curr_node].GetComponentInChildren<Light> ().enabled = true;
-		if (curr_node == nodes.Length-1) {
-			GameManager.gameEnded = true;
-			return;
+
+			if (curr_node == nodes.Length-1) {
+				GameManager.gameEnded = true;
+				FindObjectOfType<AudioManager>().Play("End");
+				return;
+			}
+			FindObjectOfType<AudioManager>().Play("LightUp");
+			nodes [curr_node].GetComponentInChildren<BoxCollider2D>().enabled = false;
+			curr_node++;
+			nodes [curr_node].GetComponentInChildren<BoxCollider2D>().enabled = true;
 		}
-		nodes [curr_node].GetComponentInChildren<BoxCollider2D>().enabled = false;
-		curr_node++;
-		nodes [curr_node].GetComponentInChildren<BoxCollider2D>().enabled = true;
 	}
 
 }

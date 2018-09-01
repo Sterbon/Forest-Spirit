@@ -3,16 +3,14 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour {
 
-	[SerializeField]private GameObject player;     
-
-	private Vector3 offset;       
-	void Start () 
+	//[SerializeField] private GameObject player;
+	[SerializeField] private Transform target;
+	[SerializeField] private Vector3 offset;       
+	private float smoothness = 0.1f;
+	void FixedUpdate () 
 	{
-		offset = transform.position - player.transform.position;
-	}
-
-	void LateUpdate () 
-	{
-		transform.position = player.transform.position + offset;
+		Vector3 desiredPosition = target.position + offset;
+		Vector3 smoothPosition = Vector3.Lerp (transform.position, desiredPosition, smoothness);
+		transform.position = smoothPosition;
 	}
 }
